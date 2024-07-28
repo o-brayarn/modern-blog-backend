@@ -7,16 +7,24 @@ let articlesInfo = [
   {
     name: "learn-react",
     upvotes: 0,
+    comments: [],
   },
   {
     name: "learn-node",
     upvotes: 0,
+    comments: [],
   },
   {
     name: "mongodb",
     upvotes: 0,
+    comments: [],
   },
 ];
+
+app.get("/api/articles", (req, res) => {
+  res.send(articlesInfo);
+});
+
 app.put("/api/articles/:name/upvotes", (req, res) => {
   const { name } = req.params;
   const article = articlesInfo.find((a) => a.name === name);
@@ -29,6 +37,19 @@ app.put("/api/articles/:name/upvotes", (req, res) => {
   }
 });
 
+app.post("/api/articles/:name/comments", (req, res) => {
+  const { name } = req.params;
+  const { postedBy, text } = req.body;
+
+  const article = articlesInfo.find((a) => a.name === name);
+
+  if (article) {
+    article.comments.push({ postedBy, text });
+    res.send(article.comments);
+  } else {
+    res.send("This ${name} does not exist");
+  }
+});
 app.listen(8000, () => {
   console.log("Server is listening on port 8000");
 });
