@@ -37,7 +37,6 @@ app.put("/api/articles/:name/upvotes", async (req, res) => {
 
   const article = await db.collection("articles").findOne({ name });
   if (article) {
-    article.upvotes += 1;
     res.send(`This ${name} article now has ${article.upvotes} upvotes`);
   } else {
     res.send("This ${name} does not exist");
