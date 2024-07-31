@@ -5,6 +5,10 @@ const app = express();
 app.use(express.json());
 // Defining different endpoints
 
+app.get("/api/articles", async (req, res) => {
+  const articles = await db.collection("articles").find().toArray();
+  res.json(articles);
+});
 app.get("/api/articles/:name", async (req, res) => {
   const { name } = req.params;
 
@@ -29,9 +33,9 @@ app.put("/api/articles/:name/upvotes", async (req, res) => {
 
   const article = await db.collection("articles").findOne({ name });
   if (article) {
-    res.send(`This ${name} article now has ${article.upvotes} upvotes`);
+    res.json(article);
   } else {
-    res.send(`This ${name} does not exist`);
+    res.send(`${name} does not exist`);
   }
 });
 
