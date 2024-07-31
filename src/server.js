@@ -21,7 +21,7 @@ app.get("/api/articles/:name", async (req, res) => {
   }
 });
 
-app.put("/api/articles/:name/upvotes", async (req, res) => {
+app.put("/api/articles/:name/upvote", async (req, res) => {
   const { name } = req.params;
 
   await db.collection("articles").updateOne(
