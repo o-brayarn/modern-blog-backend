@@ -3,16 +3,28 @@ import { db, connectToDb } from "./db.js";
 import fs from "fs";
 import admin from "firebase-admin";
 
-
-const credentials = JSON.parse(
-  fs.readFileSync("../credentials.json")
-)
+const credentials = JSON.parse(fs.readFileSync("../credentials.json"));
 admin.initializeApp({
-  credential: admin.credential.cert(credentials)
-})
+  credential: admin.credential.cert(credentials),
+});
 
 const app = express();
 app.use(express.json());
+
+app.use(async (req, res, next) => {
+  const { authtoken } = req.headers;
+
+  if (authtoken) {
+    try {
+      const user = await admin.auth().verifyIdToken(authtoken);
+      req.user = user;
+    } catch (e) {
+      res.sendStatus(400);
+    }
+  }
+  next();
+});
+
 // Defining different endpoints
 
 app.get("/api/articles", async (req, res) => {
@@ -21,10 +33,14 @@ app.get("/api/articles", async (req, res) => {
 });
 app.get("/api/articles/:name", async (req, res) => {
   const { name } = req.params;
+  const { uid } = req.user;
 
   const article = await db.collection("articles").findOne({ name });
 
   if (article) {
+    const upvoteIds = article.upvoteIds || [];
+    article.canUpvote = uid && !upvoteIds.includes(uid);
+    
     res.json(article);
   } else {
     res.sendStatus(404);
