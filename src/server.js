@@ -3,6 +3,7 @@ import { db, connectToDb } from "./db.js";
 import fs from "fs";
 import admin from "firebase-admin";
 import path from "path";
+import "dotenv/config";
 
 // Recreate the underscore directory (often available when not using type modules)
 import { fileURLToPath } from "url";

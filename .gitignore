@@ -6,3 +6,4 @@
 /.env
 /prod-env.yaml
 /dist
+/password.js
