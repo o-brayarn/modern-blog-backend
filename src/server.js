@@ -2,6 +2,12 @@ import express from "express";
 import { db, connectToDb } from "./db.js";
 import fs from "fs";
 import admin from "firebase-admin";
+import path from "path";
+
+// Recreate the underscore directory (often available when not using type modules)
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const credentials = JSON.parse(fs.readFileSync("./credentials.json"));
 admin.initializeApp({
@@ -10,6 +16,12 @@ admin.initializeApp({
 
 const app = express();
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "../dist")));
+
+// When a user sends a request to an inexistent API route
+app.get(/^(?!\/api).+/, (req, res) => {
+  res.sendFile(path.join(__dirname, "../dist/index.html"));
+});
 
 app.use(async (req, res, next) => {
   const { authtoken } = req.headers;
@@ -104,9 +116,10 @@ app.post("/api/articles/:name/comments", async (req, res) => {
   }
 });
 
+const PORT = process.env.PORT || 8000;
 connectToDb(() => {
   console.log("Successfully connected to mongodb database");
-  app.listen(8000, () => {
-    console.log("Server is listening on port 8000");
+  app.listen(PORT, () => {
+    console.log("Server is listening on port " + PORT);
   });
 });
