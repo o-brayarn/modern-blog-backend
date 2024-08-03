@@ -1,7 +1,7 @@
 /**/node_modules
 /.pnp
 .pnp.js
-/mongodb-data/
+/mongo-db-data/
 /credentials.json
 /.env
 /prod-env.yaml
